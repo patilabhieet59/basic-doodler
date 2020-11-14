@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded',() => {
     let platformSpacing = 120
     let platforms = []
     let gameover = false
+    let landedPlatform = -1
     
     class Doodler {
         constructor() {
@@ -53,13 +54,18 @@ document.addEventListener('DOMContentLoaded',() => {
     function movePlatforms() {
         setInterval(()=>{
             let modify = false;
-            platforms.forEach((p) => {
+            platforms.forEach((p,i) => {
                 p.bottom -= 5;
                 p.visual.style.bottom = p.bottom + 'px';
                 if(p.bottom < 0) {
                     modify = true;
                 }
+                if(landedPlatform === i) {
+                    console.log('matched');
+                    doodler.bottom = p.bottom
+                }
             })
+            
             if(modify) {
                 let visual = platforms[0].visual;
                 visual.classList.remove('platform');
@@ -67,24 +73,29 @@ document.addEventListener('DOMContentLoaded',() => {
                 let bottom = platformSpacing * 5;
                 let platform = new Platform(bottom);
                 modify = false;
+                landedPlatform += 1;
             }
         },300)
     }
     
     function control(e){
+        
         if(e.key === 'ArrowUp') {
-            if(doodler.bottom + 50 < 550){
-                doodler.bottom += 50;
+            landedPlatform = -1;
+            if(doodler.bottom + 100 < 550){
+                doodler.bottom += 100;
                 doodler.visual.style.bottom = doodler.bottom + 'px';
             }
         }
         if(e.key === 'ArrowLeft') {
+            landedPlatform = -1;
             if(doodler.left - 30 > 0 ){
                 doodler.left -= 30;
                 doodler.visual.style.left = doodler.left + 'px';
             }
         }
         if(e.key === 'ArrowRight') {
+            landedPlatform = -1;
             if(doodler.left + 30 < 460) {
                 doodler.left += 30;
                 doodler.visual.style.left = doodler.left + 'px';
@@ -94,11 +105,25 @@ document.addEventListener('DOMContentLoaded',() => {
 
     function fall() {
         setInterval(()=>{
-            if(doodler.bottom - 10 > 0){
-                doodler.bottom -= 10;
+            
+            if(landedPlatform < 0 && !isLanded(doodler.left,doodler.bottom) && doodler.bottom - 1 > 0){
+                doodler.bottom -= 1;
                 doodler.visual.style.bottom = doodler.bottom + 'px';
             }
-        },300);
+        },20);
+    }
+
+    function isLanded(left,bottom) {
+        let result = false;
+        platforms.forEach((p,i) => {
+            if(p.left < left && p.left + 100 > left + 40 && 
+               p.bottom + 10 < bottom && p.bottom + 20 > bottom && !result) {
+                console.log('landed on: ' + i);
+                landedPlatform = i;
+                result = true;
+            }
+        })
+        return result;
     }
 
     function start(){
