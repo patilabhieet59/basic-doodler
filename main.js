@@ -73,10 +73,32 @@ document.addEventListener('DOMContentLoaded',() => {
     
     function control(e){
         if(e.key === 'ArrowUp') {
-            console.log(doodler.bottom);
-            doodler.bottom += 50;
-            doodler.visual.style.bottom = doodler.bottom + 'px';
+            if(doodler.bottom + 50 < 550){
+                doodler.bottom += 50;
+                doodler.visual.style.bottom = doodler.bottom + 'px';
+            }
         }
+        if(e.key === 'ArrowLeft') {
+            if(doodler.left - 30 > 0 ){
+                doodler.left -= 30;
+                doodler.visual.style.left = doodler.left + 'px';
+            }
+        }
+        if(e.key === 'ArrowRight') {
+            if(doodler.left + 30 < 460) {
+                doodler.left += 30;
+                doodler.visual.style.left = doodler.left + 'px';
+            }
+        }
+    }
+
+    function fall() {
+        setInterval(()=>{
+            if(doodler.bottom - 10 > 0){
+                doodler.bottom -= 10;
+                doodler.visual.style.bottom = doodler.bottom + 'px';
+            }
+        },300);
     }
 
     function start(){
@@ -84,6 +106,7 @@ document.addEventListener('DOMContentLoaded',() => {
             createPlatform();
             createDoodler();
             movePlatforms();
+            fall();
             document.addEventListener('keyup',control);
         }
     }
